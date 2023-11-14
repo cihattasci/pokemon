@@ -2,8 +2,9 @@ import {SafeAreaView, FlatList, StyleSheet} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import CardItem from '../components/CardItem';
 import Spinner from 'react-native-loading-spinner-overlay';
-import {PokemonCard, colors} from '../utils';
+import {PokemonCard} from '../types';
 import {useNavigation} from '@react-navigation/native';
+import {colors, showToast} from '../utils';
 
 export default function PokemonListScreen() {
   const navigation = useNavigation();
@@ -28,7 +29,7 @@ export default function PokemonListScreen() {
       const data = await response.json();
       setCards((prevCards: any) => [...prevCards, ...data.data]);
     } catch (error) {
-      console.error('Error fetching Pokémon cards:', error);
+      showToast('error', 'Oops!', 'Error fetching Pokémon cards');
     } finally {
       setLoading(false);
     }
@@ -40,7 +41,7 @@ export default function PokemonListScreen() {
 
   const navigate = (id: string) => {
     //@ts-ignore
-    navigation.navigate('CardDetail', {id});
+    navigation.navigate('CardDetail', {cardId: id});
   };
 
   return (

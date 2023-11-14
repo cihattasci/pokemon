@@ -1,6 +1,7 @@
 import {View, Text, TouchableOpacity, Image, StyleSheet} from 'react-native';
 import React from 'react';
-import {PokemonCard, colors, metrics} from '../utils';
+import {colors, metrics} from '../utils';
+import {PokemonCard} from '../types';
 
 interface CardItemProps {
   item: PokemonCard;
