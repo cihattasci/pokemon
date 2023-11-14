@@ -1,10 +1,34 @@
-import {SafeAreaView, Text} from 'react-native';
-import React from 'react';
+import {SafeAreaView, StyleSheet} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import Spinner from 'react-native-loading-spinner-overlay';
+import {colors} from '../utils';
 
-export default function PokemonDetailScreen() {
+type RouteProps = {
+  route: {
+    params: {
+      id: string;
+    };
+  };
+};
+
+export default function PokemonDetailScreen({
+  route: {
+    params: {id},
+  },
+}: RouteProps) {
+  const [loading, setLoading] = useState<boolean>(false);
+
   return (
-    <SafeAreaView>
-      <Text>PokemonDetailScreen</Text>
+    <SafeAreaView style={styles.main}>
+      <Spinner visible={loading} />
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  main: {
+    flex: 1,
+    backgroundColor: colors.white,
+    alignItems: 'center',
+  },
+});

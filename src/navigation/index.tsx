@@ -3,6 +3,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import PokemonListScreen from '../screens/PokemonListScreen';
 import PokemonDetailScreen from '../screens/PokemonDetailScreen';
+import {colors} from '../utils';
 
 const Stack = createNativeStackNavigator();
 
@@ -13,12 +14,24 @@ const AppNavigator = () => {
         <Stack.Screen
           name="PokemonList"
           component={PokemonListScreen}
-          options={{title: 'Pokemon Cards'}}
+          options={{
+            title: 'Pokemons',
+            headerTransparent: true,
+            headerStyle: {
+              backgroundColor: colors.white,
+            },
+          }}
         />
         <Stack.Screen
           name="CardDetail"
           component={PokemonDetailScreen}
-          options={{title: 'Card Detail'}}
+          options={{
+            title: 'Card Detail',
+            headerTransparent: true,
+            headerStyle: {
+              backgroundColor: colors.white,
+            },
+          }}
         />
       </Stack.Navigator>
     </NavigationContainer>
