@@ -1,20 +1,33 @@
-import {SafeAreaView, FlatList, StyleSheet} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import {SafeAreaView, FlatList, StyleSheet, View, Dimensions, Platform} from 'react-native';
+import React, {useEffect} from 'react';
 import CardItem from '../components/CardItem';
 import Spinner from 'react-native-loading-spinner-overlay';
-import {PokemonCard} from '../types';
 import {useNavigation} from '@react-navigation/native';
-import {colors, showToast} from '../utils';
+import {colors, metrics, showToast} from '../utils';
+import {useDispatch, useSelector} from 'react-redux';
+import {RootState} from '../stores/store';
+import {incrementPage, setCards, setLoading} from '../stores/slices/CardsSlice';
+import {PokemonCard} from '../types';
 
 export default function PokemonListScreen() {
   const navigation = useNavigation();
-  const [loading, setLoading] = useState<boolean>(true);
-  const [cards, setCards] = useState<PokemonCard[]>([]);
-  const [page, setPage] = useState<number>(1);
+  const loading = useSelector((state: RootState) => state.card.loading);
+  const cards = useSelector((state: RootState) => state.card.cards);
+  const page = useSelector((state: RootState) => state.card.page);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     fetchPokemonCards();
   }, [page]);
+
+  const loadMoreCards = () => {
+    dispatch(incrementPage());
+  };
+
+  const navigate = (id: string) => {
+    //@ts-ignore
+    navigation.navigate('CardDetail', {cardId: id});
+  };
 
   const fetchPokemonCards = async () => {
     try {
@@ -26,36 +39,30 @@ export default function PokemonListScreen() {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
-      const data = await response.json();
-      setCards((prevCards: any) => [...prevCards, ...data.data]);
+      const data: PokemonCard = await response.json();
+      //@ts-ignore
+      dispatch(setCards([...cards, ...data.data]));
     } catch (error) {
       showToast('error', 'Oops!', 'Error fetching Pokémon cards');
     } finally {
-      setLoading(false);
+      dispatch(setLoading(false));
     }
-  };
-
-  const loadMoreCards = () => {
-    setPage(prevPage => prevPage + 1);
-  };
-
-  const navigate = (id: string) => {
-    //@ts-ignore
-    navigation.navigate('CardDetail', {cardId: id});
   };
 
   return (
     <SafeAreaView style={styles.main}>
       <Spinner visible={loading} />
-      <FlatList
-        data={cards}
-        renderItem={({item}) => (
-          <CardItem item={item} navigate={() => navigate(item.id)} />
-        )}
-        keyExtractor={(item, index) => `${item.id.toString()}_${index}`}
-        onEndReached={loadMoreCards}
-        onEndReachedThreshold={0.1}
-      />
+      <View style={styles.listContainer}>
+        <FlatList
+          data={cards}
+          renderItem={({item}) => (
+            <CardItem item={item} navigate={() => navigate(item.id)} />
+          )}
+          keyExtractor={(item, index) => `${item.id.toString()}_${index}`}
+          onEndReached={loadMoreCards}
+          onEndReachedThreshold={0.1}
+        />
+      </View>
     </SafeAreaView>
   );
 }
@@ -65,4 +72,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     alignItems: 'center',
   },
+  listContainer:{
+    marginVertical: Platform.OS === "android" ? metrics.height * 0.06 : 0
+  }
 });

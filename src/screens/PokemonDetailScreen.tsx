@@ -5,23 +5,32 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   Switch,
+  Platform,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import Spinner from 'react-native-loading-spinner-overlay';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {PokemonCard, RouteProps} from '../types';
+import {RouteProps} from '../types';
 import {colors, metrics, showToast} from '../utils';
 import CardDetailAbility from '../components/CardDetailAbility';
+import {useDispatch, useSelector} from 'react-redux';
+import {RootState} from '../stores/store';
+import {
+  setLoading,
+  setSelectedCard,
+  setIsCardSaved,
+} from '../stores/slices/CardsSlice';
 
 export default function PokemonDetailScreen({route}: RouteProps) {
   const {cardId} = route.params;
-  const [loading, setLoading] = useState<boolean>(true);
-  const [cardDetails, setCardDetails] = useState<PokemonCard>(
-    {} as PokemonCard,
+  const loading = useSelector((state: RootState) => state.card.loading);
+  const cardDetails = useSelector(
+    (state: RootState) => state.card.selectedCard,
   );
-  const [isCardSaved, setIsCardSaved] = useState<boolean>(false);
+  const isCardSaved = useSelector((state: RootState) => state.card.isCardSaved);
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     fetchCardDetails();
@@ -34,22 +43,22 @@ export default function PokemonDetailScreen({route}: RouteProps) {
         `https://api.pokemontcg.io/v2/cards/${cardId}`,
       );
       const data = await response.json();
-      setCardDetails(data.data);
+      dispatch(setSelectedCard(data.data));
     } catch (error) {
       showToast('error', 'Oops!', 'Error fetching Pokémon card details');
     }
   };
 
   const checkIfCardSaved = async () => {
-    setLoading(true);
+    dispatch(setLoading(true));
     try {
       const savedCardsString = await AsyncStorage.getItem('savedCards');
       const savedCards = savedCardsString ? JSON.parse(savedCardsString) : [];
-      setIsCardSaved(savedCards.includes(cardId));
+      dispatch(setIsCardSaved(savedCards.includes(cardId)));
     } catch (error) {
       showToast('error', 'Oops!', 'Error checking if card is saved ' + error);
     } finally {
-      setLoading(false);
+      dispatch(setLoading(false));
     }
   };
 
@@ -65,18 +74,18 @@ export default function PokemonDetailScreen({route}: RouteProps) {
       }
 
       await AsyncStorage.setItem('savedCards', JSON.stringify(savedCards));
-      setIsCardSaved(!isCardSaved);
+      dispatch(setIsCardSaved(!isCardSaved));
     } catch (error) {
       showToast('error', 'Oops!', 'Error toggling save card ' + error);
     } finally {
-      setLoading(false);
+      dispatch(setLoading(false));
     }
   };
 
   return (
     <SafeAreaView style={styles.main}>
       <ScrollView showsVerticalScrollIndicator={false} style={{flex: 1}}>
-        <View style={{alignItems: 'center'}}>
+        <View style={styles.infoContainer}>
           <Spinner visible={loading} />
 
           <Image
@@ -85,17 +94,29 @@ export default function PokemonDetailScreen({route}: RouteProps) {
             }}
             style={styles.image}
           />
+          <CardDetailAbility title={'Name'} ability={cardDetails?.name} />
+          <CardDetailAbility title={'Artist'} ability={cardDetails.artist} />
           <CardDetailAbility
             title={'Type'}
             ability={cardDetails?.types?.join(', ')}
           />
           <CardDetailAbility title={'HP'} ability={cardDetails?.hp} />
-          {cardDetails?.attacks?.map?.(attack => {
+          {cardDetails?.attacks?.map?.((attack, index) => {
             return (
               <CardDetailAbility
                 vertical
                 title={attack.name}
                 ability={attack.text}
+                key={`${index}_card_abilities`}
+              />
+            );
+          })}
+          {cardDetails?.weaknesses?.map?.((weak, index) => {
+            return (
+              <CardDetailAbility
+                title={weak.type}
+                ability={weak.value}
+                key={`${index}_card_weakness`}
               />
             );
           })}
@@ -129,6 +150,10 @@ const styles = StyleSheet.create({
   main: {
     flex: 1,
     backgroundColor: colors.white,
+  },
+  infoContainer: {
+    marginVertical: Platform.OS === 'android' ? metrics.height * 0.06 : 0,
+    alignItems: 'center',
   },
   image: {
     width: metrics.width * 0.45,
