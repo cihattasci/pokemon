@@ -1,0 +1,1 @@
+// will write test for pokemon detgail screen

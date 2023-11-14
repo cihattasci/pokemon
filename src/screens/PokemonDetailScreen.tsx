@@ -9,6 +9,7 @@ import {
   Platform,
 } from 'react-native';
 import React, {useEffect} from 'react';
+import Config from 'react-native-config';
 import Spinner from 'react-native-loading-spinner-overlay';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {RouteProps} from '../types';
@@ -39,9 +40,7 @@ export default function PokemonDetailScreen({route}: RouteProps) {
 
   const fetchCardDetails = async () => {
     try {
-      const response = await fetch(
-        `https://api.pokemontcg.io/v2/cards/${cardId}`,
-      );
+      const response = await fetch(Config.API_URL + `/${cardId}`);
       const data = await response.json();
       dispatch(setSelectedCard(data.data));
     } catch (error) {

@@ -1,5 +1,6 @@
-import {SafeAreaView, FlatList, StyleSheet, View, Dimensions, Platform} from 'react-native';
+import {SafeAreaView, FlatList, StyleSheet, View, Platform} from 'react-native';
 import React, {useEffect} from 'react';
+import Config from 'react-native-config';
 import CardItem from '../components/CardItem';
 import Spinner from 'react-native-loading-spinner-overlay';
 import {useNavigation} from '@react-navigation/native';
@@ -15,6 +16,8 @@ export default function PokemonListScreen() {
   const cards = useSelector((state: RootState) => state.card.cards);
   const page = useSelector((state: RootState) => state.card.page);
   const dispatch = useDispatch();
+
+  console.log(Config.API_URL)
 
   useEffect(() => {
     fetchPokemonCards();
@@ -32,7 +35,7 @@ export default function PokemonListScreen() {
   const fetchPokemonCards = async () => {
     try {
       const response = await fetch(
-        `https://api.pokemontcg.io/v2/cards?page=${page}&pageSize=10`,
+        Config.API_URL + `?page=${page}&pageSize=10`,
       );
 
       if (!response.ok) {
@@ -72,7 +75,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     alignItems: 'center',
   },
-  listContainer:{
-    marginVertical: Platform.OS === "android" ? metrics.height * 0.06 : 0
-  }
+  listContainer: {
+    marginVertical: Platform.OS === 'android' ? metrics.height * 0.06 : 0,
+  },
 });
