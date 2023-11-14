@@ -1,4 +1,12 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+
+![Simulator Screenshot - iPhone 15 Pro - 2023-11-14 at 17 00 32](https://github.com/cihattasci/pokemon/assets/63815355/fbf8b212-0137-457d-b114-c05e869a13a5)
+![Screenshot_1699970532](https://github.com/cihattasci/pokemon/assets/63815355/ce5d6f62-c953-4c94-b6c5-32ae8bf3f46c)
+![Screenshot_1699970428](https://github.com/cihattasci/pokemon/assets/63815355/d13c18d6-404a-4deb-8183-1ac3fdc8aa47)
+![Simulator Screenshot - iPhone 15 Pro - 2023-11-14 at 17 00 55](https://github.com/cihattasci/pokemon/assets/63815355/676d453c-097a-47c0-8a6a-512b7d876429)
+
+
+
+![Screenshot_1699970532](https://github.com/cihattasci/pokemon/assets/63815355/66901bfd-7405-4406-85f8-d8734da6f573)This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
 
 # Getting Started
 
